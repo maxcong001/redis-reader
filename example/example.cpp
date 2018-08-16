@@ -1,20 +1,111 @@
 
 #include "logger/logger.hpp"
-
+#include "resp_parser.hpp"
+#include <stdio.h>
+#include <assert.h>
 int main()
 {
-    set_log_level(logger_iface::log_level::warn);
-    set_max_log_buff(10);
-    for (int i = 0; i < 100; i++)
-    {
-        __LOG(error, "hello logger!"
-                         << "this is error log");
-        __LOG(warn, "hello logger!"
-                        << "this is warn log");
-        __LOG(info, "hello logger!"
-                        << "this is info log");
-        __LOG(debug, "hello logger!"
-                         << "this is debug log");
-    }
-    dump_log();
+    set_log_level(logger_iface::log_level::debug);
+    std::string test;
+    std::pair<size_t, ParseResult> ret;
+
+    test = "+OK\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "-Error message\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = ":1000\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "$6\r\nfoobar\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "$0\r\n\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "$-1\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "*0\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "*3\r\n:1\r\n:2\r\n:3\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "*-1\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    test = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
+    // multi
+    test = "+OK\r\n+OK\r\n+OK\r\n*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
+    ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
+        __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
+    });
+    __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
+    assert(test.size() == std::get<0>(ret));
+
 }
