@@ -1,26 +1,16 @@
-# logger function
+# redis reader
+redis reader is a tool for redis resp message, the input is a string of resp message, the out put is complete or else and how many byte had processed. When the input has a resp message, registered function will called. 
 
+Note: the goal for this idea is to see how many resp message in the input string, and will call registered function, in the registered function, it will not change the data in the input mssage. if the input message has in-complete resp message, it will read the resp messasge and return the processed message in the result.
+For example: 
+if the input message is "+OK\r\n+O", it will return 5 and in-complete.
 
-## just include the header file. with 
-
-
-```
-#define __LOGGING_ENABLED
-```
-
-## how to set loglevel
-```
-std::unique_ptr<logger_iface> active_logger(new logger(logger::log_level::debug));
-```
-
+Detail see example.
 
 ## dependancy
 C++11
 
-## new update.
-add buffer function. with this function, you can add this function to your singal handler. when Segment falt happen. you can dump MAX_LOG_BUFFER of log with all the log level.
 
-This is useful. when a product deliver. we must set the loglevel to warn or error. but when something bad happen(segmetn falt). then is no log context. this will help you !!!
 
 
 enjoy
