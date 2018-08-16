@@ -100,6 +100,7 @@ int main()
     __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
     assert(test.size() == std::get<0>(ret));
 
+    // multi
     test = "+OK\r\n+OK\r\n+OK\r\n*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
     ret = rasp_parser::process_resp(test, [](char *buf, size_t len) {
         __LOG(debug, "buf is : " << (void *)buf << ", len is : " << len);
@@ -107,5 +108,4 @@ int main()
     __LOG(debug, "size of string is : " << test.size() << ", size in the return is : " << std::get<0>(ret));
     assert(test.size() == std::get<0>(ret));
 
-    getchar();
 }
